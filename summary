@@ -1,0 +1,51 @@
+0. Dataset overview and initial preprocessing -
+a) Encoded a few columns
+b) Created column-wise stats for NaN values in order to decide how to handle them. I handled theme in Step 7b in this list.
+
+1. Feature Engineering -
+a) Added "distance_from_city_centre feature" as city centres are usually more expensive areas. This can also be seen in the maps I have created in the Geospatial Analysis section.
+b) Added features "host_tenure", "days_since_first_review" and "days_since_last_review"
+
+2. Exploratory Data Analysis
+a) Created correlation heatmaps for every feature vs log_price
+b) Created histograms for every feature
+c) Created scatter plots for every feature vs log_price
+d) Wrote many inferences for all of the above (listed in the notebook) 
+
+3. Geospatial Analysis
+a) I mapped all the homes on a world map according to latitude and longitude. I coloured each marker according to their log_price. This allowed me to clearly see that prices reduce as we move away from city centres and that prices increase near coastlines.
+b) I created price distributions of the neighbourhoods and listed which of the 619 neighbourhoods tend to have higher or lower prices by using correlation matrices
+c) I created price distributions of cities and compared the prices of homes in different cities. Expensive homes tend to be in San Francisco, LA, Boston and DC.
+
+4. Sentiment Analysis
+a) I conducted VADER sentiment analysis on all the descriptions. Most of the sentiments came out to be positive.
+
+5. Amenity Analysis
+a) After one-hot encoding every amenity, I created a correlation heatmap of them against log_price. Using this, I found which amenities tend to be associated with high or low prices. For example Family/kid friendly, TV, Cable TV etc are highly correlated with higher prices while "free parking on street", "host greets you" and "Smoking allowed" are highly correlated with lower prices.
+
+6. Categorical Data Encoding
+a) Categorically encoded data
+
+7. Model Development
+a) I dropped columns that had already been processed to form other columns (for example "amenities" had been one-hot encoded) and columns that were useless (for example "id").
+b) To handle NA values, I decided to drop columns instead of rows, because they had very low correlation with log_price, according to the correlation matrix. Moreover, this was much better than the alternative of dropping 26,325 rows. Most of the NaN values only occurred in 3 columns, all of which were unimportant.
+c) I tried several models such as - 
+i) Linear Regression - Just testing to see baseline performance level. We observe that the model underfits greatly. Therefore, we need to use a more complex model.
+ii) Decision Tree Regressor - Here we observe that the model overfits greatly. max_depth can be set. We can also use a decision tree ensemble, which can explore more possible trees and reduce overfitting.
+iii) Random Forests Regressor - After trying this decision tree ensemble, we observe that overfitting is reduced albeit still there. I tried increasing the number of estimators to reduce overfitting. I also set a lower max_depth in order to curb overfitting. However, performance stagnated at this metric.
+iv)Gradient Boosted Regressor - Trying more tree ensembles
+v) Histogram Gradient Boosted Regressor 
+vi) XGBoosted Regressor - This model gave promising train set scores, similar to that of Random Forests. This led me to try out XGBoosted Random Forests.
+vii) XGBoosted Random Forests Regressor
+Unfortunately, due to having low compute and time, I had to train models quicker by only using half of the rows for training and evaluation.
+
+8. Model Optimization and Validation
+a) I conducted random search on Random Forests Regressor, Gradient Boosted Regressor, Histogram Gradient Boosted Regressor and XGBoosted Regressor. Due to having insufficient compute and less time, I had to compromise for lower number of random search iterations, resulting in lower R2 score.
+b) After all models were evaluated on the train set, XGBoosted Random Forests Regressor came out on top with the highest R2 score. 
+
+9. Feature Importance and Model Insights
+a) Listed important features using Random Forest Importances - Eg: Entire home/apt, bathrooms, Host_Tenure, number_of_reviews, bedrooms, LA, DC etc.
+b) Listed important features and their linear relation to log_price using SHAP - Eg: City centre decreases with increase in log_price, homestays in East Harlem and Upper West Side are expensive, higher amenities count implies higher price etc
+
+10. Predictive Performance Assessment
+I evaluated the final XGBoosted Random Forests Regressor.
